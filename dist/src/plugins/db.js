@@ -7,8 +7,8 @@ const dbPlugin = async (fastify) => {
     await prisma.$connect();
     // Tipagem explícita na decoração
     fastify.decorate("prisma", prisma);
-    fastify.addHook("onClose", async (instance) => {
-        await instance.prisma.$disconnect(); // Agora reconhecido
+    fastify.addHook("onClose", async () => {
+        await fastify.prisma.$disconnect();
     });
 };
 exports.dbPlugin = dbPlugin;

@@ -1,11 +1,29 @@
-import { describe, it, expect } from "vitest";
-// Importe seu app e escreva os testes de documentos
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { app } from '../src/index'
 
-describe("Documents", () => {
-  it("should create a document", async () => {
-    // Teste de criação
-  });
-  it("should get a document", async () => {
-    // Teste de consulta
-  });
-});
+describe('Documents', () => {
+  beforeAll(async () => {
+    await app.ready()
+  })
+
+  afterAll(async () => {
+    await app.close()
+  })
+
+  it('should create a document', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/documents',
+      headers: {
+        authorization: `Bearer ${process.env.TEST_TOKEN}`
+      },
+      payload: {
+        titulo: 'Documento Teste',
+        autor: 'Autor Teste',
+        status: 'ativo'
+      }
+    })
+
+    expect(response.statusCode).toBe(201)
+  })
+})
