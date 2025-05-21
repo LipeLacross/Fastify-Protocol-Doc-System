@@ -1,0 +1,14 @@
+type Document {
+  protocolo: String!
+  titulo: String!
+  descricao: String
+  autor: String!
+  arquivo: String
+  status: String!
+  dataCriacao: String!
+}
+
+type Query {
+  documents(status: String): [Document!]!
+  document(protocolo: String!): Document
+}

@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      String
+  name      String?
+  createdAt DateTime  @default(now())
+  documents Document[]
+  histories History[] @relation("UserHistory") // Campo adicionado
+}
+
+
+model Document {
+  id         String    @id @default(uuid())
+  protocolo  String    @unique
+  titulo     String
+  descricao  String
+  autor      String
+  arquivo    String
+  status     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  histories  History[]
+}
+
+model History {
+  id          String   @id @default(uuid())
+  documentId  String
+  userId      String
+  changedAt   DateTime @default(now())
+  changes     String
+  document    Document @relation(fields: [documentId], references: [id])
+  user        User     @relation("UserHistory", fields: [userId], references: [id]) // Nome da relação
+}

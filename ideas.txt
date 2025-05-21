@@ -1,0 +1,111 @@
+
+📦 Projeto: Sistema de Protocolo de Documentos com REST + GraphQL
+Um sistema completo de backend utilizando Fastify + TypeScript, com upload de arquivos, autenticação, histórico de alterações e dois modos de acesso à API: REST (para administração) e GraphQL (para consulta pública).
+
+🎯 Objetivo
+Criar uma API moderna e robusta que permita:
+
+Cadastrar documentos com número de protocolo único
+
+Fazer upload de arquivos associados a esses documentos
+
+Manter um histórico de alterações de cada documento
+
+Autenticar usuários com JWT
+
+Permitir consulta pública via GraphQL
+
+🧩 Módulos principais
+🔐 Autenticação
+Registro e login de usuários com email, senha, role (admin/user)
+
+JWT com middleware de proteção para rotas privadas
+
+🗃️ Gestão de Documentos
+CRUD de documentos via REST:
+
+POST /documents (criação + upload)
+
+GET /documents/:id
+
+PUT /documents/:id (edição com log no histórico)
+
+DELETE /documents/:id (opcional)
+
+Campos de documento:
+
+protocolo (gerado automaticamente, ex: DOC-2025001)
+
+titulo, descricao, autor, arquivo, status
+
+📜 Histórico de Alterações
+Cada edição registra:
+
+Usuário que alterou
+
+Campos modificados
+
+Data da alteração
+
+Endpoint: GET /documents/:id/history
+
+📂 Upload de Arquivos
+Upload com fastify-multipart
+
+Armazenamento:
+
+Local (pasta uploads/) ou
+
+Supabase (se desejar)
+
+Rota de acesso aos arquivos via fastify-static
+
+📊 Consulta Pública via GraphQL
+Endpoint: /graphql
+
+Permite consultas como:
+
+graphql
+Copy
+Edit
+query {
+documents(status: "ativo") {
+protocolo
+titulo
+autor
+dataCriacao
+}
+}
+Apenas leitura (sem autenticação)
+
+🛠️ Tecnologias
+Fastify (com plugins como fastify-jwt, fastify-multipart, mercurius, fastify-static)
+
+TypeScript
+
+PostgreSQL (via Prisma ou TypeORM)
+
+GraphQL com mercurius
+
+Testes com Vitest ou tap
+
+🗂️ Estrutura de pastas (sugestão)
+pgsql
+Copy
+Edit
+src/
+├── routes/
+│ ├── auth.routes.ts
+│ ├── documents.routes.ts
+├── controllers/
+├── services/
+├── schemas/
+├── graphql/
+│ ├── schema.gql
+│ ├── resolvers.ts
+├── plugins/
+│ ├── auth.ts
+│ ├── db.ts
+│ ├── graphql.ts
+├── uploads/
+├── prisma/ (ou ormconfig)
