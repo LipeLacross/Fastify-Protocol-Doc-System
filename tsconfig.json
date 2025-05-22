@@ -1,26 +1,22 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-   "module": "NodeNext",
-    "moduleResolution": "NodeNext", // Devem ser iguais
-    "outDir": "dist",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"],
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "lib": ["ES2022", "DOM"],
-    "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "@/*": ["./src/*"],
-    "baseUrl": "./src", // Adicionar para path aliases
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/graphql/*": ["./graphql/*"],
-      "@/services/*": ["./services/*"]
-    },
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
