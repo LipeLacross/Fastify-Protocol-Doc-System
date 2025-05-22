@@ -5,15 +5,20 @@ import fs from "fs";
 import path from "path";
 import { FastifyInstance } from "fastify";
 
+// src/plugins/graphql.ts
 export const graphqlPlugin: FastifyPluginAsync = async (fastify) => {
-  const schema = fs.readFileSync(path.join(__dirname, "../graphql/schema.gql"), "utf8");
+  const schema = fs.readFileSync(
+    path.join(__dirname, "../graphql/schema.gql"),
+    "utf8"
+  );
 
   fastify.register(mercurius, {
     schema,
     resolvers,
     graphiql: true,
-    context: (): { fastify: FastifyInstance } => ({
-      fastify
+    context: () => ({
+      prisma: fastify.prisma // ← Passe o Prisma diretamente
     })
   });
 };
+

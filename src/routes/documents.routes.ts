@@ -12,88 +12,109 @@ import {
 } from "../schemas/documents.schema";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
-// Converter schemas Zod para JSON Schema com required explícito
-const createDocumentJsonSchema = {
-  ...zodToJsonSchema(CreateDocumentSchema),
-  required: ["titulo", "autor", "status"]
-};
-
+// Converter schemas Zod para JSON Schema
+const createDocumentJsonSchema = zodToJsonSchema(CreateDocumentSchema);
 const updateDocumentJsonSchema = zodToJsonSchema(UpdateDocumentSchema);
 
+// Interface para parâmetros de rota
+interface DocumentParams {
+  id: string;
+}
+
 const documentsRoutes: FastifyPluginAsync = async (fastify) => {
-  // Hook de autenticação global
+  // Protege todas as rotas com autenticação
   fastify.addHook("onRequest", fastify.authenticate);
 
   // Criação de documento
-  fastify.post("/", {
-    schema: {
-      body: createDocumentJsonSchema,
-      response: {
-        201: {
-          type: "object",
-          properties: {
-            protocolo: { type: "string" },
-            titulo: { type: "string" },
-            id: { type: "string" },
-            status: { type: "string" }
+  fastify.post<{ Body: CreateDocumentSchema }>(
+    "/",
+    {
+      schema: {
+        body: createDocumentJsonSchema,
+        response: {
+          201: {
+            type: "object",
+            properties: {
+              protocolo: { type: "string" },
+              titulo: { type: "string" },
+              id: { type: "string" },
+              status: { type: "string" }
+            }
           }
         }
       }
-    }
-  }, createDocumentController);
+    },
+    createDocumentController
+  );
 
-  // Obter documento
-  fastify.get("/:id", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          id: { type: "string", format: "uuid" }
-        },
-        required: ["id"]
+  // Obter documento por ID
+  fastify.get<{ Params: DocumentParams }>(
+    "/:id",
+    {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" }
+          },
+          required: ["id"]
+        }
       }
-    }
-  }, getDocumentController);
+    },
+    getDocumentController
+  );
 
-  // Atualização de documento
-  fastify.put("/:id", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          id: { type: "string", format: "uuid" }
+  // Atualizar documento
+  fastify.put<{ Params: DocumentParams; Body: UpdateDocumentSchema }>(
+    "/:id",
+    {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" }
+          },
+          required: ["id"]
         },
-        required: ["id"]
-      },
-      body: updateDocumentJsonSchema
-    }
-  }, updateDocumentController);
-
-  // Exclusão de documento
-  fastify.delete("/:id", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          id: { type: "string", format: "uuid" }
-        },
-        required: ["id"]
+        body: updateDocumentJsonSchema
       }
-    }
-  }, deleteDocumentController);
+    },
+    updateDocumentController
+  );
+
+  // Excluir documento
+  fastify.delete<{ Params: DocumentParams }>(
+    "/:id",
+    {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" }
+          },
+          required: ["id"]
+        }
+      }
+    },
+    deleteDocumentController
+  );
 
   // Histórico de alterações
-  fastify.get("/:id/history", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          id: { type: "string", format: "uuid" }
-        },
-        required: ["id"]
+  fastify.get<{ Params: DocumentParams }>(
+    "/:id/history",
+    {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" }
+          },
+          required: ["id"]
+        }
       }
-    }
-  }, getHistoryController);
+    },
+    getHistoryController
+  );
 };
 
 export default documentsRoutes;

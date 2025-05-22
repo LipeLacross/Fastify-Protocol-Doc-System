@@ -12,12 +12,7 @@ declare module "fastify" {
   }
 
   interface FastifyRequest {
-    jwtVerify: () => Promise<{
-      id: string;
-      email: string;
-      role: string;
-    }>;
-    user: {
+    user: { // ← Adicione esta interface
       id: string;
       email: string;
       role: string;

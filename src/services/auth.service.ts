@@ -1,19 +1,50 @@
 import bcrypt from 'bcryptjs'
-import { RegisterSchema, LoginSchema } from '@/schemas/auth.schema'
-import { FastifyInstance } from 'fastify'
+import { RegisterSchema, LoginSchema } from '../schemas/auth.schema'
+import { PrismaClient } from '@prisma/client'
 
-export async function registerUser(data: RegisterSchema, fastify: FastifyInstance) {
-  const hashed = await bcrypt.hash(data.password, 10)
-  const user = await fastify.prisma.user.create({
-    data: { ...data, password: hashed }
+export async function registerUser(
+  data: RegisterSchema,
+  prisma: PrismaClient
+) {
+  const hashedPassword = await bcrypt.hash(data.password, 10)
+
+  const user = await prisma.user.create({
+    data: {
+      email: data.email,
+      password: hashedPassword,
+      role: data.role,
+      name: data.name
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      name: true
+    }
   })
-  return { id: user.id, email: user.email, role: user.role, name: user.name }
+
+  return user
 }
 
-export async function loginUser(data: LoginSchema, fastify: FastifyInstance) {
-  const user = await fastify.prisma.user.findUnique({ where: { email: data.email } })
-  if (!user) throw new Error('Credenciais inválidas')
+export async function loginUser(
+  data: LoginSchema,
+  prisma: PrismaClient
+) {
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      role: true,
+      name: true
+    }
+  })
+
+  if (!user) throw new Error('Usuário não encontrado')
+
   const valid = await bcrypt.compare(data.password, user.password)
-  if (!valid) throw new Error('Credenciais inválidas')
+  if (!valid) throw new Error('Senha incorreta')
+
   return user
 }

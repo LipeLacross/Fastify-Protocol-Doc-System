@@ -13,6 +13,7 @@
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "@/*": ["./src/*"],
     "baseUrl": "./src", // Adicionar para path aliases
     "paths": {
       "@/*": ["./src/*"],

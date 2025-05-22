@@ -1,8 +1,8 @@
 import { MercuriusContext } from "mercurius";
-import { FastifyInstance } from "fastify";
+import { PrismaClient } from "@prisma/client";
 
 declare module "mercurius" {
   interface MercuriusContext {
-    fastify: FastifyInstance;
+    prisma: PrismaClient;
   }
 }

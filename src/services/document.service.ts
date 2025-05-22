@@ -1,26 +1,15 @@
 import { CreateDocumentSchema, UpdateDocumentSchema } from "../schemas/documents.schema";
 import { FastifyInstance } from "fastify";
 import { nanoid } from "nanoid";
+import { PrismaClient } from "@prisma/client";
 
 interface PublicDocument {
-    id: string;            // ← adicione este campo
+  id: string;
   protocolo: string;
   titulo: string;
   autor: string;
   createdAt: string;
   status: string;
-}
-
-interface DocumentWithHistory {
-  protocolo: string;
-  titulo: string;
-  descricao?: string;
-  autor: string;
-  arquivo?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  histories: HistoryEntry[];
 }
 
 interface HistoryEntry {
@@ -33,11 +22,11 @@ interface HistoryEntry {
 export async function createDocument(
   data: CreateDocumentSchema,
   user: { id: string },
-  fastify: FastifyInstance
+  prisma: PrismaClient // Alterado para receber Prisma diretamente
 ): Promise<PublicDocument> {
   const protocolo = `DOC-${new Date().getFullYear()}${nanoid(5).toUpperCase()}`;
 
-  const doc = await fastify.prisma.document.create({
+  const doc = await prisma.document.create({
     data: {
       ...data,
       protocolo,
@@ -57,9 +46,8 @@ export async function createDocument(
   };
 }
 
-
-export async function getDocument(id: string, fastify: FastifyInstance) {
-  const doc = await fastify.prisma.document.findUnique({
+export async function getDocument(id: string, prisma: PrismaClient) {
+  const doc = await prisma.document.findUnique({
     where: { id },
     include: {
       user: { select: { name: true, email: true } },
@@ -86,11 +74,11 @@ export async function updateDocument(
   id: string,
   data: UpdateDocumentSchema,
   user: { id: string },
-  fastify: FastifyInstance
+  prisma: PrismaClient
 ) {
-  const oldDoc = await fastify.prisma.document.findUnique({ where: { id } });
+  const oldDoc = await prisma.document.findUnique({ where: { id } });
 
-  const updated = await fastify.prisma.document.update({
+  const updated = await prisma.document.update({
     where: { id },
     data
   });
@@ -101,8 +89,7 @@ export async function updateDocument(
       .map(key => `${key}: ${oldDoc[key as keyof typeof oldDoc]} → ${data[key as keyof typeof data]}`)
       .join('\n');
 
-
-    await fastify.prisma.history.create({
+    await prisma.history.create({
       data: {
         documentId: id,
         userId: user.id,
@@ -114,12 +101,12 @@ export async function updateDocument(
   return updated;
 }
 
-export async function deleteDocument(id: string, fastify: FastifyInstance) {
-  await fastify.prisma.document.delete({ where: { id } });
+export async function deleteDocument(id: string, prisma: PrismaClient) {
+  await prisma.document.delete({ where: { id } });
 }
 
-export async function getHistory(documentId: string, fastify: FastifyInstance) {
-  const history = await fastify.prisma.history.findMany({
+export async function getHistory(documentId: string, prisma: PrismaClient) {
+  const history = await prisma.history.findMany({
     where: { documentId },
     orderBy: { changedAt: "desc" },
     include: { user: { select: { name: true } } }
@@ -133,9 +120,9 @@ export async function getHistory(documentId: string, fastify: FastifyInstance) {
 
 export async function getPublicDocuments(
   status: string | undefined,
-  fastify: FastifyInstance
+  prisma: PrismaClient
 ) {
-  const docs = await fastify.prisma.document.findMany({
+  const docs = await prisma.document.findMany({
     where: { status: status || "ativo" },
     select: {
       protocolo: true,
@@ -154,9 +141,9 @@ export async function getPublicDocuments(
 
 export async function getDocumentByProtocolo(
   protocolo: string,
-  fastify: FastifyInstance
+  prisma: PrismaClient
 ) {
-  const doc = await fastify.prisma.document.findUnique({
+  const doc = await prisma.document.findUnique({
     where: { protocolo },
     include: {
       histories: {

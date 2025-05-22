@@ -7,10 +7,10 @@ interface QueryArgs {
 
 export const resolvers: IResolvers = {
   Query: {
-    documents: async (_, { status }: QueryArgs, { fastify }) =>
-      getPublicDocuments(status, fastify),
+    documents: async (_, { status }: QueryArgs, { prisma }) =>
+      getPublicDocuments(status, prisma), // ← Recebe o Prisma diretamente
 
-    document: async (_, { protocolo }: { protocolo: string }, { fastify }) =>
-      getDocumentByProtocolo(protocolo, fastify)
+    document: async (_, { protocolo }: { protocolo: string }, { prisma }) =>
+      getDocumentByProtocolo(protocolo, prisma)
   }
 };
