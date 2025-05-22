@@ -8,7 +8,7 @@ exports.getHistory = getHistory;
 exports.getPublicDocuments = getPublicDocuments;
 exports.getDocumentByProtocolo = getDocumentByProtocolo;
 const nanoid_1 = require("nanoid");
-async function createDocument(data, user, fastify // Receba a instância do Fastify
+async function createDocument(data, user, fastify // Receba a instância via parâmetro
 ) {
     const protocolo = "DOC-" + new Date().getFullYear() + (0, nanoid_1.nanoid)(5);
     const doc = await fastify.prisma.document.create({
@@ -16,8 +16,8 @@ async function createDocument(data, user, fastify // Receba a instância do Fast
             ...data,
             protocolo,
             userId: user.id,
-            descricao: data.descricao || '', // Valor padrão
-            arquivo: data.arquivo || '' // Valor padrão
+            descricao: data.descricao || '',
+            arquivo: data.arquivo || ''
         }
     });
     return doc;

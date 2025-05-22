@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { RegisterSchema, LoginSchema } from '../schemas/auth.schema'
+import { RegisterSchema, LoginSchema } from '@/schemas/auth.schema'
 import { FastifyInstance } from 'fastify'
 
 export async function registerUser(data: RegisterSchema, fastify: FastifyInstance) {

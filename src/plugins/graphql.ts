@@ -4,6 +4,7 @@ import { resolvers } from "../graphql/resolvers";
 import fs from "fs";
 import path from "path";
 
+// src/plugins/graphql.ts
 export const graphqlPlugin: FastifyPluginAsync = async (fastify) => {
   const schema = fs.readFileSync(path.join(__dirname, "../graphql/schema.gql"), "utf8");
 
@@ -11,8 +12,8 @@ export const graphqlPlugin: FastifyPluginAsync = async (fastify) => {
     schema,
     resolvers,
     graphiql: true,
-    context: (request) => ({
-      app: request.server
+    context: () => ({
+      fastify // ← Passa a instância do Fastify diretamente
     })
   });
 };

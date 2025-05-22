@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { registerUser, loginUser } from '../services/auth.service'
-import { RegisterSchema, LoginSchema } from '../schemas/auth.schema'
+import { registerUser, loginUser } from '@/services/auth.service'
+import { RegisterSchema, LoginSchema } from '@/schemas/auth.schema'
 
 export async function registerController(
   request: FastifyRequest<{ Body: RegisterSchema }>,
