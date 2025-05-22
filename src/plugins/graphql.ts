@@ -3,8 +3,8 @@ import mercurius from "mercurius";
 import { resolvers } from "../graphql/resolvers";
 import fs from "fs";
 import path from "path";
+import { FastifyInstance } from "fastify";
 
-// src/plugins/graphql.ts
 export const graphqlPlugin: FastifyPluginAsync = async (fastify) => {
   const schema = fs.readFileSync(path.join(__dirname, "../graphql/schema.gql"), "utf8");
 
@@ -12,8 +12,8 @@ export const graphqlPlugin: FastifyPluginAsync = async (fastify) => {
     schema,
     resolvers,
     graphiql: true,
-    context: () => ({
-      fastify // ← Passa a instância do Fastify diretamente
+    context: (): { fastify: FastifyInstance } => ({
+      fastify
     })
   });
 };

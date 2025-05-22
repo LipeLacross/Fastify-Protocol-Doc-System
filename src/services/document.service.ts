@@ -1,14 +1,41 @@
 import { CreateDocumentSchema, UpdateDocumentSchema } from "../schemas/documents.schema";
 import { FastifyInstance } from "fastify";
 import { nanoid } from "nanoid";
-import { Prisma } from "@prisma/client";
+
+interface PublicDocument {
+    id: string;            // ← adicione este campo
+  protocolo: string;
+  titulo: string;
+  autor: string;
+  createdAt: string;
+  status: string;
+}
+
+interface DocumentWithHistory {
+  protocolo: string;
+  titulo: string;
+  descricao?: string;
+  autor: string;
+  arquivo?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  histories: HistoryEntry[];
+}
+
+interface HistoryEntry {
+  id: string;
+  changedAt: string;
+  changes: string;
+  user: { name: string };
+}
 
 export async function createDocument(
   data: CreateDocumentSchema,
   user: { id: string },
   fastify: FastifyInstance
-) {
-  const protocolo = "DOC-" + new Date().getFullYear() + nanoid(5).toUpperCase();
+): Promise<PublicDocument> {
+  const protocolo = `DOC-${new Date().getFullYear()}${nanoid(5).toUpperCase()}`;
 
   const doc = await fastify.prisma.document.create({
     data: {
@@ -23,11 +50,13 @@ export async function createDocument(
   return {
     id: doc.id,
     protocolo: doc.protocolo,
+    autor: doc.autor,
     titulo: doc.titulo,
     status: doc.status,
     createdAt: doc.createdAt.toISOString()
   };
 }
+
 
 export async function getDocument(id: string, fastify: FastifyInstance) {
   const doc = await fastify.prisma.document.findUnique({
@@ -68,9 +97,10 @@ export async function updateDocument(
 
   if (oldDoc) {
     const changes = Object.keys(data)
-      .filter(key => data[key] !== oldDoc[key])
-      .map(key => `${key}: ${oldDoc[key]} → ${data[key]}`)
+      .filter(key => data[key as keyof typeof data] !== oldDoc[key as keyof typeof oldDoc])
+      .map(key => `${key}: ${oldDoc[key as keyof typeof oldDoc]} → ${data[key as keyof typeof data]}`)
       .join('\n');
+
 
     await fastify.prisma.history.create({
       data: {
