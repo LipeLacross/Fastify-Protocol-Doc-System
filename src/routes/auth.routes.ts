@@ -9,7 +9,6 @@ import {
 } from "../schemas/auth.schema";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
-// Converter schemas Zod para JSON Schema
 const registerJsonSchema = zodToJsonSchema(RegisterSchema, "RegisterSchema");
 const loginJsonSchema = zodToJsonSchema(LoginSchema, "LoginSchema");
 
@@ -46,6 +45,12 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
   }, loginController);
+
+  // Rota GET para verificar se auth está funcionando
+  fastify.get("/", async () => ({
+    message: "Auth endpoint funcionando",
+    endpoints: ["/register", "/login"]
+  }));
 };
 
 export default authRoutes;

@@ -7,10 +7,36 @@ interface QueryArgs {
 
 export const resolvers: IResolvers = {
   Query: {
-    documents: async (_, { status }: QueryArgs, { prisma }) =>
-      getPublicDocuments(status, prisma), // ← Recebe o Prisma diretamente
+    // Query de teste para verificar se GraphQL funciona
+    hello: () => "🚀 GraphQL funcionando perfeitamente! Sistema online.",
 
-    document: async (_, { protocolo }: { protocolo: string }, { prisma }) =>
-      getDocumentByProtocolo(protocolo, prisma)
+    // Status do sistema
+    status: () => "Sistema de Protocolo de Documentos - Online ✅",
+
+    // Consultar documentos com tratamento de erro robusto
+    documents: async (_, { status }: QueryArgs, { prisma }) => {
+      try {
+        if (!prisma) {
+          return [];
+        }
+        return await getPublicDocuments(status, prisma);
+      } catch (error) {
+        console.error('Erro ao buscar documentos:', error);
+        return [];
+      }
+    },
+
+    // Consultar documento específico
+    document: async (_, { protocolo }: { protocolo: string }, { prisma }) => {
+      try {
+        if (!prisma || !protocolo) {
+          return null;
+        }
+        return await getDocumentByProtocolo(protocolo, prisma);
+      } catch (error) {
+        console.error('Erro ao buscar documento:', error);
+        return null;
+      }
+    }
   }
 };

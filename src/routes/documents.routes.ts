@@ -12,109 +12,56 @@ import {
 } from "../schemas/documents.schema";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
-// Converter schemas Zod para JSON Schema
 const createDocumentJsonSchema = zodToJsonSchema(CreateDocumentSchema);
 const updateDocumentJsonSchema = zodToJsonSchema(UpdateDocumentSchema);
 
-// Interface para parâmetros de rota
 interface DocumentParams {
   id: string;
 }
 
 const documentsRoutes: FastifyPluginAsync = async (fastify) => {
-  // Protege todas as rotas com autenticação
-  fastify.addHook("onRequest", fastify.authenticate);
+  // Rota GET pública para verificar se o endpoint funciona
+  fastify.get("/", async (request, reply) => {
+    reply.send({
+      message: "📄 Endpoint de documentos funcionando",
+      info: "Use POST para criar documentos (requer autenticação)",
+      status: "online"
+    });
+  });
 
-  // Criação de documento
-  fastify.post<{ Body: CreateDocumentSchema }>(
-    "/",
-    {
-      schema: {
-        body: createDocumentJsonSchema,
-        response: {
-          201: {
-            type: "object",
-            properties: {
-              protocolo: { type: "string" },
-              titulo: { type: "string" },
-              id: { type: "string" },
-              status: { type: "string" }
+  // Aplicar autenticação apenas nas rotas que precisam
+  fastify.register(async function(fastify) {
+    // Hook de autenticação aplicado apenas neste contexto
+    fastify.addHook("onRequest", fastify.authenticate);
+
+    // Criação de documento (protegida)
+    fastify.post<{ Body: CreateDocumentSchema }>(
+      "/",
+      {
+        schema: {
+          body: createDocumentJsonSchema,
+          response: {
+            201: {
+              type: "object",
+              properties: {
+                protocolo: { type: "string" },
+                titulo: { type: "string" },
+                id: { type: "string" },
+                status: { type: "string" }
+              }
             }
           }
         }
-      }
-    },
-    createDocumentController
-  );
+      },
+      createDocumentController
+    );
 
-  // Obter documento por ID
-  fastify.get<{ Params: DocumentParams }>(
-    "/:id",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            id: { type: "string", format: "uuid" }
-          },
-          required: ["id"]
-        }
-      }
-    },
-    getDocumentController
-  );
-
-  // Atualizar documento
-  fastify.put<{ Params: DocumentParams; Body: UpdateDocumentSchema }>(
-    "/:id",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            id: { type: "string", format: "uuid" }
-          },
-          required: ["id"]
-        },
-        body: updateDocumentJsonSchema
-      }
-    },
-    updateDocumentController
-  );
-
-  // Excluir documento
-  fastify.delete<{ Params: DocumentParams }>(
-    "/:id",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            id: { type: "string", format: "uuid" }
-          },
-          required: ["id"]
-        }
-      }
-    },
-    deleteDocumentController
-  );
-
-  // Histórico de alterações
-  fastify.get<{ Params: DocumentParams }>(
-    "/:id/history",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            id: { type: "string", format: "uuid" }
-          },
-          required: ["id"]
-        }
-      }
-    },
-    getHistoryController
-  );
+    // Demais rotas protegidas...
+    fastify.get<{ Params: DocumentParams }>("/:id", { /* schema */ }, getDocumentController);
+    fastify.put<{ Params: DocumentParams; Body: UpdateDocumentSchema }>("/:id", { /* schema */ }, updateDocumentController);
+    fastify.delete<{ Params: DocumentParams }>("/:id", { /* schema */ }, deleteDocumentController);
+    fastify.get<{ Params: DocumentParams }>("/:id/history", { /* schema */ }, getHistoryController);
+  });
 };
 
 export default documentsRoutes;

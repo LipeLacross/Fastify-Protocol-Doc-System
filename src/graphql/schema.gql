@@ -9,6 +9,15 @@ type Document {
 }
 
 type Query {
+  # Query de teste essencial para verificar funcionamento
+  hello: String!
+
+  # Query de status do sistema
+  status: String!
+
+  # Consultar documentos por status
   documents(status: String): [Document!]!
+
+  # Consultar documento específico por protocolo
   document(protocolo: String!): Document
 }
