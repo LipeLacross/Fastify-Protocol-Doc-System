@@ -25,14 +25,14 @@ Um backend completo para gestão de documentos com autenticação, upload de arq
 ## 📸 Exemplo Visual do Projeto
 
 <div align="center">
-  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 20px;">
-    <img src="https://github.com/user-attachments/assets/32d750a3-f6df-4ea8-8197-834d07c56451" width="280" alt="Página inicial">
-    <img src="https://github.com/user-attachments/assets/5ce22afe-c686-4b88-b177-a056f156a345" width="280" alt="Autenticação">
-    <img src="https://github.com/user-attachments/assets/3fee4659-5394-4ef0-b4ff-705fab2b939f" width="280" alt="Documentos">
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-bottom: 30px;">
+    <img src="https://github.com/user-attachments/assets/32d750a3-f6df-4ea8-8197-834d07c56451" width="400" alt="Home page">
+    <img src="https://github.com/user-attachments/assets/5ce22afe-c686-4b88-b177-a056f156a345" width="400" alt="Authentication">
+    <img src="https://github.com/user-attachments/assets/3fee4659-5394-4ef0-b4ff-705fab2b939f" width="400" alt="Documents">
   </div>
-  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
-    <img src="https://github.com/user-attachments/assets/c2431858-f9ee-463c-b40b-6e463936a988" width="280" alt="Uploads">
-    <img src="https://github.com/user-attachments/assets/bf08cdd2-2cc9-49b5-8521-21a8a31732d5" width="280" alt="GraphQL">
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+    <img src="https://github.com/user-attachments/assets/c2431858-f9ee-463c-b40b-6e463936a988" width="400" alt="Uploads">
+    <img src="https://github.com/user-attachments/assets/bf08cdd2-2cc9-49b5-8521-21a8a31732d5" width="400" alt="GraphQL">
   </div>
 </div>
 
